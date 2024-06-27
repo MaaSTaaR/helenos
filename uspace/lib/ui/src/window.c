@@ -59,6 +59,7 @@
 #include "../private/ui.h"
 #include "../private/wdecor.h"
 #include "../private/window.h"
+#include "../private/menubar.h"
 
 static void dwnd_close_event(void *);
 static void dwnd_focus_event(void *, unsigned);
@@ -769,6 +770,22 @@ error:
 	if (win_bmp != NULL)
 		gfx_bitmap_destroy(win_bmp);
 	return rc;
+}
+
+/** Is the menubar active.
+ *
+ * Check if the menubar of the window has been clicked and a drop-down
+ * menu is currently opened or not.
+ *
+ * @param window Window
+ *
+ * @return true when there is a drop-down menu being displayed
+ */
+bool ui_window_is_menubar_active(ui_window_t *window) {
+	if (window->mbar != NULL)
+		return window->mbar->active;
+
+	return false;
 }
 
 /** Resize/move window.

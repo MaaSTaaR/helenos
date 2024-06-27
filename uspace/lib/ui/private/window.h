@@ -134,6 +134,7 @@ extern void ui_window_send_pos(ui_window_t *, pos_event_t *);
 extern void ui_window_send_unfocus(ui_window_t *, unsigned);
 extern errno_t ui_window_size_change(ui_window_t *, gfx_rect_t *,
     ui_wnd_sc_op_t);
+extern bool ui_window_is_menubar_active(ui_window_t *);
 
 #endif
 

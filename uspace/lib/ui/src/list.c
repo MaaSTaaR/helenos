@@ -46,6 +46,7 @@
 #include <ui/scrollbar.h>
 #include "../private/list.h"
 #include "../private/resource.h"
+#include "../private/window.h"
 
 static void ui_list_ctl_destroy(void *);
 static errno_t ui_list_ctl_paint(void *);
@@ -397,6 +398,9 @@ ui_evclaim_t ui_list_pos_event(ui_list_t *list, pos_event_t *event)
 	size_t entry_idx;
 	ui_evclaim_t claim;
 	int n;
+
+	if (ui_window_is_menubar_active(list->window))
+		return ui_claimed;
 
 	claim = ui_scrollbar_pos_event(list->scrollbar, event);
 	if (claim == ui_claimed)

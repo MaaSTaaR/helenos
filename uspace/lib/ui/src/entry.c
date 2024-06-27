@@ -52,6 +52,7 @@
 #include <ui/window.h>
 #include "../private/entry.h"
 #include "../private/resource.h"
+#include "../private/window.h"
 
 static void ui_entry_ctl_destroy(void *);
 static errno_t ui_entry_ctl_paint(void *);
@@ -795,7 +796,7 @@ ui_evclaim_t ui_entry_pos_event(ui_entry_t *entry, pos_event_t *event)
 {
 	gfx_coord2_t pos;
 
-	if (entry->read_only)
+	if (entry->read_only || ui_window_is_menubar_active(entry->window))
 		return ui_unclaimed;
 
 	if (event->type == POS_UPDATE) {

@@ -74,6 +74,7 @@
 #include "../private/pbutton.h"
 #include "../private/resource.h"
 #include "../private/scrollbar.h"
+#include "../private/window.h"
 
 enum {
 	/** Scrollbar button width */
@@ -906,6 +907,9 @@ ui_evclaim_t ui_scrollbar_pos_event(ui_scrollbar_t *scrollbar, pos_event_t *even
 	gfx_coord2_t pos;
 	ui_evclaim_t claimed;
 	ui_scrollbar_geom_t geom;
+
+	if (ui_window_is_menubar_active(scrollbar->window))
+		return ui_claimed;
 
 	ui_scrollbar_get_geom(scrollbar, &geom);
 

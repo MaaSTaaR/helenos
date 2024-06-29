@@ -118,6 +118,7 @@ libs = [
 	'wndmgt',
 
 	'ui',
+	'json',
 ]
 
 # Generated list of include directory paths

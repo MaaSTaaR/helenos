@@ -41,8 +41,13 @@
 void json_load(const char *str)
 {
 	text_t *text = init_text(str);
+	token_t *curr_token = NULL;
 	
-	get_token(text);
+	curr_token = get_token(text);
+	
+	while (curr_token->type != (token_type_t) EOF) {
+		curr_token = get_token(text);
+	}
 }
 
 

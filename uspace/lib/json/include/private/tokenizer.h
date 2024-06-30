@@ -7,7 +7,14 @@ typedef enum {
 	COLON,
 	ARRAY_START,
 	ARRAY_END,
+	EOF,
 	UNKOWN
 } token_type_t;
 
-token_type_t get_token(text_t *);
+
+typedef struct {
+	token_type_t type;
+	char *lexeme;
+} token_t;
+
+token_t *get_token(text_t *);

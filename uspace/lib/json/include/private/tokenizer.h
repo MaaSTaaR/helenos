@@ -23,6 +23,7 @@ typedef struct {
 
 token_t *get_token(text_t *);
 void consume_whitespaces(text_t *);
+void set_lexeme(text_t *, token_t *, int);
 void tokenize_string(text_t *, token_t *);
 void tokenize_number(text_t *, token_t *);
 void tokenize_bool(text_t *, token_t *);

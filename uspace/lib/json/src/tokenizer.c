@@ -19,61 +19,68 @@ void consume_whitespaces(text_t *text) {
 	}
 }
 
+void set_lexeme(text_t *text, token_t *curr_token, int lexeme_size) {
+	int curr_idx = 0;
+	
+	text_rewind(text, lexeme_size + 1);
+	
+	curr_token->lexeme = malloc(sizeof(char) * lexeme_size + 1);
+	
+	for (; curr_idx < lexeme_size; curr_idx++) {
+		curr_token->lexeme[curr_idx] = get_next_char(text);
+	}
+	
+	curr_token->lexeme[curr_idx] = '\0';
+	
+	text_forward(text, 1);
+}
+
 void tokenize_string(text_t *text, token_t *curr_token) {
 	if (get_curr_char(text) != '"')
 		return; // ERROR
 
 	char curr_char = get_next_char(text);
+	int lexeme_size = 0;
 	
 	while (curr_char != '"') {
 		if (curr_char == '\0')
 			return; // ERROR. Reached EOF but the string is still open
 		
+		lexeme_size++;
+		
 		curr_char = get_next_char(text);
 	}
 	
-	printf( "STR\n" );
-	
 	curr_token->type = STR;
-	//curr_token->lexeme = ;
+	
+	set_lexeme(text, curr_token, lexeme_size);
+	
+	printf( "STR(%s)\n", curr_token->lexeme );
 }
-
-/*bool isdigit(char curr_char) {
-	switch (curr_char) {
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return true;
-		default:
-			return false;
-	}
-}*/
 
 void tokenize_number(text_t *text, token_t *curr_token) {
 	if (!isdigit(get_curr_char(text)))
 		return; // ERROR
 
 	char curr_char = get_next_char(text);
+	int lexeme_size = 1;
 	
 	while (isdigit(curr_char)) {
 		if (curr_char == '\0')
 			return; // ERROR. Reached EOF but the string is still open
 		
+		lexeme_size++;
+		
 		curr_char = get_next_char(text);
 	}
 	
-	backward_position(text);
-	
-	printf( "NUMBER\n" );
 	curr_token->type = NUMBER;
-	//curr_token->lexeme = ;
+	
+	set_lexeme(text, curr_token, lexeme_size);
+	
+	text_rewind(text, 1);
+	
+	printf( "NUMBER(%s)\n", curr_token->lexeme );
 }
 
 void tokenize_bool(text_t *text, token_t *curr_token) {
@@ -81,18 +88,16 @@ void tokenize_bool(text_t *text, token_t *curr_token) {
 		return; // ERROR
 	}
 
-	int size = (get_curr_char(text) == 't' ? 4 : 5) + 1;
-	char *lexeme = malloc(size * sizeof(char));
+	int size = (get_curr_char(text) == 't' ? 4 : 5);
+	char *lexeme = malloc(size * sizeof(char) + 1);
 	int curr_idx = 0;
 	
 	lexeme[curr_idx++] = get_curr_char(text);
 	
 	for (; curr_idx < size; curr_idx++)
-			lexeme[curr_idx++] = get_next_char(text);
+			lexeme[curr_idx] = get_next_char(text);
 	
 	lexeme[curr_idx] = '\0';
-	
-	printf( "LEXEME = %s\n", lexeme );
 	
 	if ((get_curr_char(text) == 't' && str_cmp(lexeme, "true") != 0) ||
 		(get_curr_char(text) == 'f' && str_cmp(lexeme, "false") != 0)) {
@@ -100,9 +105,10 @@ void tokenize_bool(text_t *text, token_t *curr_token) {
 		return; // ERROR
 	}
 	
-	printf( "BOOL" );
 	curr_token->type = BOOL;
 	curr_token->lexeme = lexeme;
+	
+	printf( "BOOL(%s)\n", curr_token->lexeme );
 }
 
 token_t *get_token(text_t *text)

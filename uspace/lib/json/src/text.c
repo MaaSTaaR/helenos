@@ -20,6 +20,10 @@ char get_curr_char(text_t *text) {
 	return text->src[text->curr_pos];
 }
 
-void backward_position(text_t *text) {
-	text->curr_pos--;
+void text_rewind(text_t *text, int by) {
+	text->curr_pos -= by;
+}
+
+void text_forward(text_t *text, int by) {
+	text->curr_pos += by;
 }

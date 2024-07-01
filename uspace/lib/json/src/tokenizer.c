@@ -5,6 +5,16 @@
 #include <ctype.h>
 #include <str.h>
 
+tokenizer_t *init_tokenizer(text_t *text) {
+	tokenizer_t *tokenizer;
+	
+	tokenizer = malloc(sizeof(tokenizer_t));
+	tokenizer->text = text;
+	tokenizer->curr_token = NULL;
+	
+	return tokenizer;
+}
+
 void consume_whitespaces(text_t *text) {
 	while (1) {
 		switch (get_next_char(text)) {
@@ -111,17 +121,48 @@ void tokenize_bool(text_t *text, token_t *curr_token) {
 	printf( "BOOL(%s)\n", curr_token->lexeme );
 }
 
-token_t *get_token(text_t *text)
+void tokenize_null(text_t *text, token_t *curr_token) {
+	if (get_curr_char(text) != 'n') {
+		return; // ERROR
+	}
+
+	int size = 4; // length of "null"
+	char *lexeme = malloc(size * sizeof(char) + 1);
+	int curr_idx = 0;
+	
+	lexeme[curr_idx++] = get_curr_char(text);
+	
+	for (; curr_idx < size; curr_idx++)
+			lexeme[curr_idx] = get_next_char(text);
+	
+	lexeme[curr_idx] = '\0';
+	
+	if (str_cmp(lexeme, "null") != 0) {
+		printf( "Unkown value: %s\n", lexeme );
+		return; // ERROR
+	}
+	
+	curr_token->type = JSON_NULL;
+	
+	printf( "NULL\n" );
+}
+
+token_t *get_next_token(tokenizer_t *tokenizer)
 {
 	token_t *curr_token = malloc(sizeof(token_t));
 	curr_token->type = (token_type_t) NULL;
 	curr_token->lexeme = NULL;
 	
-	consume_whitespaces(text);
+	if (tokenizer->curr_token != NULL)
+		free(tokenizer->curr_token);
 	
-	char curr_char = get_curr_char(text);
+	tokenizer->curr_token = curr_token;
 	
-	switch (get_curr_char(text)) {
+	consume_whitespaces(tokenizer->text);
+	
+	char curr_char = get_curr_char(tokenizer->text);
+	
+	switch (get_curr_char(tokenizer->text)) {
 		case '{':
 			printf( "OBJ_START\n" );
 			curr_token->type = OBJ_START;
@@ -147,7 +188,7 @@ token_t *get_token(text_t *text)
 			curr_token->type = ARRAY_END;
 			break;
 		case '"':
-			tokenize_string(text, curr_token);
+			tokenize_string(tokenizer->text, curr_token);
 			break;
 		case '\0':
 			printf( "EOF\n" );
@@ -155,9 +196,11 @@ token_t *get_token(text_t *text)
 			break;
 		default:
 			if (isdigit(curr_char))
-				tokenize_number(text, curr_token);
+				tokenize_number(tokenizer->text, curr_token);
 			else if (curr_char == 't' || curr_char == 'f' )
-				tokenize_bool(text, curr_token);
+				tokenize_bool(tokenizer->text, curr_token);
+			else if (curr_char == 'n')
+				tokenize_null(tokenizer->text, curr_token);
 			
 			if (curr_token->type == (token_type_t) NULL) {
 				printf( "UNKOWN\n" );
@@ -167,5 +210,9 @@ token_t *get_token(text_t *text)
 			break;
 	}
 
-	return curr_token;
+	return tokenizer->curr_token;
+}
+
+token_t *get_curr_token(tokenizer_t *tokenizer) {
+	return tokenizer->curr_token;
 }

@@ -35,19 +35,79 @@
  */
 
 #include "json.h"
-#include "private/tokenizer.h"
 #include <stdio.h>
+
+void value(tokenizer_t *tokenizer) {
+	token_t *curr_token = NULL;
+	
+	curr_token = get_curr_token(tokenizer);
+	
+	switch (curr_token->type) {
+		case STR:
+			break;
+		case NUMBER:
+			break;
+		case OBJ_START:
+			object(tokenizer);
+			break;
+		case ARRAY_START:
+			break;
+		case BOOL:
+			break;
+		case JSON_NULL:
+			break;
+		default:
+			printf( "ERROR" );
+			return;
+	}
+}
+
+void object(tokenizer_t *tokenizer) {
+	token_t *curr_token = NULL;
+	
+	curr_token = get_curr_token(tokenizer);
+	
+	if (curr_token->type != (token_type_t) OBJ_START) {
+		printf("ERROR");
+		return;
+	}
+	
+	curr_token = get_next_token(tokenizer);
+	
+	while (curr_token->type != (token_type_t) OBJ_END) {
+		if (curr_token->type == (token_type_t) STR) {
+			if ((get_next_token(tokenizer))->type == (token_type_t) COLON) {
+				get_next_token(tokenizer);
+				value(tokenizer);
+				return;
+			} else {
+				printf("ERROR\n");
+				return;
+			}
+		} else {
+			printf("ERROR\n");
+			return;
+		}
+	}
+}
 
 void json_load(const char *str)
 {
 	text_t *text = init_text(str);
+	tokenizer_t *tokenizer = init_tokenizer(text);
+	
 	token_t *curr_token = NULL;
 	
-	curr_token = get_token(text);
+	curr_token = get_next_token(tokenizer);
 	
 	while (curr_token->type != (token_type_t) EOF) {
-		curr_token = get_token(text);
+		object(tokenizer);
+		
+		return;
+		//curr_token = get_next_token(tokenizer);
 	}
+	
+	// TODO: free up the last token
 }
 
 

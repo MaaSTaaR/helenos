@@ -31,9 +31,16 @@
  */
 /** @file
  */
+ 
+#include "private/tokenizer.h"
 
 #ifndef _LIBJSON_JSON_H_
 #define _LIBJSON_JSON_H_
+
+// The following belong to the parser
+// which I'll saperate later.
+void value(tokenizer_t *);
+void object(tokenizer_t *);
 
 extern void json_load(const char *);
 

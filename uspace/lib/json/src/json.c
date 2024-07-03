@@ -62,6 +62,35 @@ void value(tokenizer_t *tokenizer) {
 	}
 }
 
+void array(tokenizer_t *tokenizer) {
+	token_t *curr_token = NULL;
+	
+	curr_token = get_curr_token(tokenizer);
+	
+	if (curr_token->type != (token_type_t) ARRAY_START) {
+		printf("ERROR");
+		return;
+	}
+	
+	curr_token = get_next_token(tokenizer);
+	
+	while (curr_token->type != (token_type_t) ARRAY_END) {
+		value(tokenizer);
+		
+		curr_token = get_next_token(tokenizer);
+		
+		if (curr_token->type == (token_type_t) COMMA) {
+			continue;
+		} else if (curr_token->type == (token_type_t) ARRAY_END ) {
+			break;
+		} else {
+			printf("ERROR");
+			return;
+		}
+	}
+}
+
+
 void object(tokenizer_t *tokenizer) {
 	token_t *curr_token = NULL;
 	
